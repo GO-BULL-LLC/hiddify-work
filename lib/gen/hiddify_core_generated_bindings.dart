@@ -4,18 +4,18 @@
 // ignore_for_file: type=lint
 import 'dart:ffi' as ffi;
 
-/// Bindings to Singbox
-class SingboxNativeLibrary {
+/// Bindings to Hiddify Core Library
+class HiddifyCoreNativeLibrary {
   /// Holds the symbol lookup function.
   final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
       _lookup;
 
   /// The symbols are looked up in [dynamicLibrary].
-  SingboxNativeLibrary(ffi.DynamicLibrary dynamicLibrary)
+  HiddifyCoreNativeLibrary(ffi.DynamicLibrary dynamicLibrary)
       : _lookup = dynamicLibrary.lookup;
 
   /// The symbols are looked up with [lookup].
-  SingboxNativeLibrary.fromLookup(
+  HiddifyCoreNativeLibrary.fromLookup(
       ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
           lookup)
       : _lookup = lookup;
@@ -2340,24 +2340,13 @@ class SingboxNativeLibrary {
       ffi.Pointer<ffi.Char> Function(
           int, ffi.Pointer<ffi.Pointer<ffi.Char>>)>();
 
-  void setupOnce(
-    ffi.Pointer<ffi.Void> api,
-  ) {
-    return _setupOnce(
-      api,
-    );
-  }
-
-  late final _setupOncePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-          'setupOnce');
-  late final _setupOnce =
-      _setupOncePtr.asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-
   ffi.Pointer<ffi.Char> setup(
     ffi.Pointer<ffi.Char> baseDir,
     ffi.Pointer<ffi.Char> workingDir,
     ffi.Pointer<ffi.Char> tempDir,
+    int mode,
+    ffi.Pointer<ffi.Char> listen,
+    ffi.Pointer<ffi.Char> secret,
     int statusPort,
     int debug,
   ) {
@@ -2365,6 +2354,9 @@ class SingboxNativeLibrary {
       baseDir,
       workingDir,
       tempDir,
+      mode,
+      listen,
+      secret,
       statusPort,
       debug,
     );
@@ -2376,61 +2368,21 @@ class SingboxNativeLibrary {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
+              ffi.Int,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
               ffi.LongLong,
               GoUint8)>>('setup');
   late final _setup = _setupPtr.asFunction<
-      ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int, int)>();
-
-  ffi.Pointer<ffi.Char> parse(
-    ffi.Pointer<ffi.Char> path,
-    ffi.Pointer<ffi.Char> tempPath,
-    int debug,
-  ) {
-    return _parse(
-      path,
-      tempPath,
-      debug,
-    );
-  }
-
-  late final _parsePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<ffi.Char> Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, GoUint8)>>('parse');
-  late final _parse = _parsePtr.asFunction<
       ffi.Pointer<ffi.Char> Function(
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
-
-  ffi.Pointer<ffi.Char> changeHiddifyOptions(
-    ffi.Pointer<ffi.Char> HiddifyOptionsJson,
-  ) {
-    return _changeHiddifyOptions(
-      HiddifyOptionsJson,
-    );
-  }
-
-  late final _changeHiddifyOptionsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<ffi.Char> Function(
-              ffi.Pointer<ffi.Char>)>>('changeHiddifyOptions');
-  late final _changeHiddifyOptions = _changeHiddifyOptionsPtr
-      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>();
-
-  ffi.Pointer<ffi.Char> generateConfig(
-    ffi.Pointer<ffi.Char> path,
-  ) {
-    return _generateConfig(
-      path,
-    );
-  }
-
-  late final _generateConfigPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<ffi.Char> Function(
-              ffi.Pointer<ffi.Char>)>>('generateConfig');
-  late final _generateConfig = _generateConfigPtr
-      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>();
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          int,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          int,
+          int)>();
 
   ffi.Pointer<ffi.Char> start(
     ffi.Pointer<ffi.Char> configPath,
@@ -2474,90 +2426,40 @@ class SingboxNativeLibrary {
   late final _restart = _restartPtr
       .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>, int)>();
 
-  ffi.Pointer<ffi.Char> startCommandClient(
-    int command,
-    int port,
+  GoSlice GetServerPublicKey() {
+    return _GetServerPublicKey();
+  }
+
+  late final _GetServerPublicKeyPtr =
+      _lookup<ffi.NativeFunction<GoSlice Function()>>('GetServerPublicKey');
+  late final _GetServerPublicKey =
+      _GetServerPublicKeyPtr.asFunction<GoSlice Function()>();
+
+  GoInterface AddGrpcClientPublicKey(
+    GoSlice clientPublicKey,
   ) {
-    return _startCommandClient(
-      command,
-      port,
+    return _AddGrpcClientPublicKey(
+      clientPublicKey,
     );
   }
 
-  late final _startCommandClientPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<ffi.Char> Function(
-              ffi.Int, ffi.LongLong)>>('startCommandClient');
-  late final _startCommandClient = _startCommandClientPtr
-      .asFunction<ffi.Pointer<ffi.Char> Function(int, int)>();
+  late final _AddGrpcClientPublicKeyPtr =
+      _lookup<ffi.NativeFunction<GoInterface Function(GoSlice)>>(
+          'AddGrpcClientPublicKey');
+  late final _AddGrpcClientPublicKey =
+      _AddGrpcClientPublicKeyPtr.asFunction<GoInterface Function(GoSlice)>();
 
-  ffi.Pointer<ffi.Char> stopCommandClient(
-    int command,
+  void close(
+    int mode,
   ) {
-    return _stopCommandClient(
-      command,
+    return _close(
+      mode,
     );
   }
 
-  late final _stopCommandClientPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Int)>>(
-          'stopCommandClient');
-  late final _stopCommandClient =
-      _stopCommandClientPtr.asFunction<ffi.Pointer<ffi.Char> Function(int)>();
-
-  ffi.Pointer<ffi.Char> selectOutbound(
-    ffi.Pointer<ffi.Char> groupTag,
-    ffi.Pointer<ffi.Char> outboundTag,
-  ) {
-    return _selectOutbound(
-      groupTag,
-      outboundTag,
-    );
-  }
-
-  late final _selectOutboundPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<ffi.Char> Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('selectOutbound');
-  late final _selectOutbound = _selectOutboundPtr.asFunction<
-      ffi.Pointer<ffi.Char> Function(
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  ffi.Pointer<ffi.Char> urlTest(
-    ffi.Pointer<ffi.Char> groupTag,
-  ) {
-    return _urlTest(
-      groupTag,
-    );
-  }
-
-  late final _urlTestPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>>('urlTest');
-  late final _urlTest = _urlTestPtr
-      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>();
-
-  ffi.Pointer<ffi.Char> generateWarpConfig(
-    ffi.Pointer<ffi.Char> licenseKey,
-    ffi.Pointer<ffi.Char> accountId,
-    ffi.Pointer<ffi.Char> accessToken,
-  ) {
-    return _generateWarpConfig(
-      licenseKey,
-      accountId,
-      accessToken,
-    );
-  }
-
-  late final _generateWarpConfigPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<ffi.Char> Function(
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('generateWarpConfig');
-  late final _generateWarpConfig = _generateWarpConfigPtr.asFunction<
-      ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+  late final _closePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>('close');
+  late final _close = _closePtr.asFunction<void Function(int)>();
 
   ffi.Pointer<ffi.Char> StartCoreGrpcServer(
     ffi.Pointer<ffi.Char> listenAddress,
