@@ -7,6 +7,7 @@ import 'package:hiddify/features/connection/notifier/connection_notifier.dart';
 import 'package:hiddify/features/profile/notifier/active_profile_notifier.dart';
 import 'package:hiddify/features/profile/model/profile_entity.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_notifier.dart';
+import 'package:hiddify/features/auth/widget/home_referral_section.dart';
 import 'package:hiddify/utils/utils.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -64,11 +65,11 @@ class HomePage extends HookConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Center(
+      body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const ConnectionButton(),
               const SizedBox(height: 22),
@@ -122,6 +123,9 @@ class HomePage extends HookConsumerWidget {
                   ),
                 ),
               ],
+              const SizedBox(height: 32),
+              // Referral system section
+              const HomeReferralSection(),
             ],
           ),
         ),

@@ -6,6 +6,7 @@ import 'package:hiddify/core/router/routes.dart';
 import 'package:hiddify/features/access/widget/access_gate_page.dart';
 import 'package:hiddify/features/deep_link/notifier/deep_link_notifier.dart';
 import 'package:hiddify/features/access/notifier/access_gate_provider.dart';
+import 'package:hiddify/features/auth/notifier/auth_notifier.dart';
 import 'package:hiddify/utils/utils.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -95,12 +96,17 @@ class RouterListenable extends _$RouterListenable
   VoidCallback? _routerListener;
   bool _firstSetupCompleted = false;
   bool _hasAccess = false;
+  bool _isAuthenticated = false;
 
   @override
   Future<void> build() async {
     _firstSetupCompleted = ref.watch(Preferences.firstSetupCompleted);
     _hasAccess =
         ref.watch(hasValidGoBullSubscriptionProvider).valueOrNull ?? false;
+
+    // Check authentication status
+    final authState = ref.watch(authStateProvider);
+    _isAuthenticated = authState.valueOrNull != null;
 
     ref.listenSelf((_, __) {
       if (state.isLoading) return;
@@ -114,6 +120,20 @@ class RouterListenable extends _$RouterListenable
     // if (this.state.isLoading || this.state.hasError) return null;
 
     final isAccess = state.uri.path == '/access';
+    final isLogin = state.uri.path == '/login';
+    final isRegister = state.uri.path == '/register';
+
+    // Allow auth screens if not authenticated
+    if (!_isAuthenticated) {
+      if (isLogin || isRegister) return null;
+      // Default to login screen if not authenticated
+      return '/login';
+    }
+
+    // Don't redirect if already on login/register when authenticated
+    if (isLogin || isRegister) {
+      return const HomeRoute().location;
+    }
 
     // Go Bull requirement:
     // - On FIRST launch only: block the app until the user adds a valid Go Bull subscription.

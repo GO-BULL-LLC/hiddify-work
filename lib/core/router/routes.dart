@@ -7,6 +7,8 @@ import 'package:hiddify/features/config_option/widget/quick_settings_modal.dart'
 
 import 'package:hiddify/features/home/widget/home_page.dart';
 import 'package:hiddify/features/intro/widget/intro_page.dart';
+import 'package:hiddify/features/auth/widget/register_screen.dart';
+import 'package:hiddify/features/auth/widget/login_screen.dart';
 import 'package:hiddify/features/log/overview/logs_overview_page.dart';
 import 'package:hiddify/features/per_app_proxy/overview/per_app_proxy_page.dart';
 import 'package:hiddify/features/profile/add/add_profile_modal.dart';
@@ -168,6 +170,36 @@ class IntroRoute extends GoRouteData {
       fullscreenDialog: true,
       name: name,
       child: IntroPage(),
+    );
+  }
+}
+
+@TypedGoRoute<RegisterRoute>(path: "/register", name: RegisterRoute.name)
+class RegisterRoute extends GoRouteData {
+  const RegisterRoute();
+  static const name = "Register";
+
+  @override
+  Page<void> buildPage(BuildContext context, GoRouterState state) {
+    return const MaterialPage(
+      fullscreenDialog: true,
+      name: name,
+      child: RegisterScreen(),
+    );
+  }
+}
+
+@TypedGoRoute<LoginRoute>(path: "/login", name: LoginRoute.name)
+class LoginRoute extends GoRouteData {
+  const LoginRoute();
+  static const name = "Login";
+
+  @override
+  Page<void> buildPage(BuildContext context, GoRouterState state) {
+    return const MaterialPage(
+      fullscreenDialog: true,
+      name: name,
+      child: LoginScreen(),
     );
   }
 }
