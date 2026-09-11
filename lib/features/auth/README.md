@@ -4,7 +4,16 @@
 
 ## Функциональность
 
-### 1. Регистрация по коду из email
+### 1. FREE Tier (2026-09-11)
+- Новый тариф для неплатящих пользователей
+- `subscription.plan.code="free"`, `status="active"`, `expires_at=null`
+- **НЕ показывать "подписка истекла"** для FREE тарифа
+- Доступ к одному бесплатному серверу (Варшава)
+- Остальные серверы: `locked:true`, `lock_reason:"paid_required"`, `available:false`
+- UI показывает апселл "Доступно на платном тарифе" (текст в `lock_message`)
+- Тарифная сетка: **free < trial(=Комфорт) < comfort < pro**
+
+### 2. Регистрация по коду из email
 - Двухшаговая регистрация
 - Шаг 1: Ввод email и запрос кода (POST `/api/v1/auth/register/request-code`)
 - Шаг 2: Ввод кода и пароля (POST `/api/v1/auth/register`)
@@ -35,10 +44,12 @@ lib/features/auth/
 ├── notifier/
 │   └── auth_notifier.dart        # State management (Riverpod)
 ├── widget/
-│   ├── register_screen.dart      # Экран регистрации
-│   ├── login_screen.dart         # Экран входа
-│   ├── referral_widget.dart      # Виджеты реферальной системы
-│   └── home_referral_section.dart # Секция рефералки на главном экране
+│   ├── register_screen.dart           # Экран регистрации
+│   ├── login_screen.dart              # Экран входа
+│   ├── referral_widget.dart           # Виджеты реферальной системы
+│   ├── subscription_info_widget.dart  # Виджет информации о тарифе
+│   ├── server_list_widget.dart        # Список серверов с lock status
+│   └── home_referral_section.dart     # Секция на главном экране
 └── README.md
 ```
 
@@ -61,7 +72,9 @@ lib/features/auth/
 - `POST /api/v1/auth/login` - вход
 
 ### С авторизацией (Bearer token):
-- `GET /api/v1/session` - информация о сессии + referral
+- `GET /api/v1/session` - информация о сессии + referral + subscription + servers
+  - `subscription`: план (free/trial/comfort/pro), статус, дата истечения
+  - `servers`: список серверов с полями locked/lock_reason/lock_message
 - `POST /api/v1/referral/apply` - применить реферальный код
 
 ## Headers

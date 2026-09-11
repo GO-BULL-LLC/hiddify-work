@@ -95,10 +95,51 @@ class Referral with _$Referral {
 }
 
 @freezed
+class SubscriptionPlan with _$SubscriptionPlan {
+  const factory SubscriptionPlan({
+    required String code, // "free", "trial", "comfort", "pro"
+    required String name,
+  }) = _SubscriptionPlan;
+
+  factory SubscriptionPlan.fromJson(Map<String, dynamic> json) =>
+      _$SubscriptionPlanFromJson(json);
+}
+
+@freezed
+class Subscription with _$Subscription {
+  const factory Subscription({
+    required SubscriptionPlan plan,
+    required String status, // "active", "expired", etc.
+    @JsonKey(name: 'expires_at') DateTime? expiresAt, // null for free tier
+  }) = _Subscription;
+
+  factory Subscription.fromJson(Map<String, dynamic> json) =>
+      _$SubscriptionFromJson(json);
+}
+
+@freezed
+class Server with _$Server {
+  const factory Server({
+    required String id,
+    required String name,
+    required String country,
+    required bool available,
+    required bool locked,
+    @JsonKey(name: 'lock_reason') String? lockReason, // "paid_required"
+    @JsonKey(name: 'lock_message') String? lockMessage,
+  }) = _Server;
+
+  factory Server.fromJson(Map<String, dynamic> json) =>
+      _$ServerFromJson(json);
+}
+
+@freezed
 class UserSession with _$UserSession {
   const factory UserSession({
     required String email,
     Referral? referral,
+    Subscription? subscription,
+    List<Server>? servers,
   }) = _UserSession;
 
   factory UserSession.fromJson(Map<String, dynamic> json) =>

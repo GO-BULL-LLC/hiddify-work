@@ -2,9 +2,11 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:hiddify/features/auth/notifier/auth_notifier.dart';
 import 'package:hiddify/features/auth/widget/referral_widget.dart';
+import 'package:hiddify/features/auth/widget/subscription_info_widget.dart';
+import 'package:hiddify/features/auth/widget/server_list_widget.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-/// Section to show on home page for referral system
+/// Section to show on home page for referral system, subscription and servers
 class HomeReferralSection extends HookConsumerWidget {
   const HomeReferralSection({super.key});
 
@@ -16,11 +18,21 @@ class HomeReferralSection extends HookConsumerWidget {
     final userSession = authState.valueOrNull;
     if (userSession == null) return const SizedBox.shrink();
 
-    final referral = userSession.referral;
+    return Column(
+      children: [
+        // Subscription info (FREE tier, Trial, Comfort, Pro)
+        const SubscriptionInfoWidget(),
 
-    // No referral info
-    if (referral == null) return const SizedBox.shrink();
+        // Server list with locked/unlocked status
+        const ServerListWidget(),
 
+        // Referral section
+        if (userSession.referral != null) _buildReferralSection(context, theme, userSession.referral!),
+      ],
+    );
+  }
+
+  Widget _buildReferralSection(BuildContext context, ThemeData theme, Referral referral) {
     // Show referral code card if user has one
     if (!referral.canApply) {
       return ReferralInfoCard(referral: referral);
